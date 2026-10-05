@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="<!-- figma:lang -->">
+<head>
+  <!-- figma:head-start -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><!-- figma:title --></title>
+  <!-- figma:head-end -->
+</head>
+
+<body>
+<!-- figma:body-start -->
+
+<div id="root"></div>
+
+<!-- ============================================================
+     DATE VALIDATION
+     ============================================================ -->
+
+<script>
+  (() => {
+
+    // ============================================================
+    // GET TODAY'S DATE
+    // ============================================================
+
+    const getToday = () => {
+
+      const now = new Date();
+
+      const year =
+              now.getFullYear();
+
+      const month =
+              String(
+                      now.getMonth() + 1
+              ).padStart(2, '0');
+
+      const day =
+              String(
+                      now.getDate()
+              ).padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
+    };
+
+
+    // ============================================================
+    // APPLY MINIMUM DATE
+    // ============================================================
+
+    const applyMinimumDate = () => {
+
+      const today =
+              getToday();
+
+
+      document
+              .querySelectorAll(
+                      'input[type="date"]'
+              )
+              .forEach(input => {
+
+                input.min =
+                        today;
+
+
+                /*
+                 * If a date input already contains
+                 * a previous date, clear it.
+                 */
+
+                if (
+                        input.value &&
+                        input.value < today
+                ) {
+
+                  input.value = '';
+
+                }
+
+              });
+    };
+
+
+    // ============================================================
+    // VALIDATE SELECTED DATE
+    // ============================================================
+
+    const validateDate = event => {
+
+      const input =
+              event.target;
+
+
+      if (
+              !(
+                      input instanceof
+                      HTMLInputElement
+              ) ||
+              input.type !== 'date'
+      ) {
+
+        return;
+      }
+
+
+      const today =
+              getToday();
+
+
+      /*
+       * Prevent selecting a date
+       * before today.
+       */
+
+      input.min =
+              today;
+
+
+      if (
+              input.value &&
+              input.value < today
+      ) {
+
+        input.value =
+                '';
+
+
+        input.setCustomValidity(
+                'Please select today or a future date.'
+        );
+
+
+        input.reportValidity();
+
+      } else {
+
+        input.setCustomValidity('');
+
+      }
+
+    };
+
+
+    // ============================================================
+    // WATCH FOR DYNAMIC DATE INPUTS
+    // ============================================================
+
+    const observer =
+            new MutationObserver(
+                    applyMinimumDate
+            );
+
+
+    // ============================================================
+    // INITIALIZE DATE VALIDATION
+    // ============================================================
+
+    const start = () => {
+
+      /*
+       * Apply today's minimum date
+       * to date inputs already on the page.
+       */
+
+      applyMinimumDate();
+
+
+      /*
+       * React pages can create date inputs
+       * dynamically, so listen for changes.
+       */
+
+      document.addEventListener(
+              'change',
+              validateDate,
+              true
+      );
+
+
+      /*
+       * Watch the React DOM for newly
+       * created date inputs.
+       */
+
+      observer.observe(
+              document.body,
+              {
+                childList: true,
+                subtree: true
+              }
+      );
+
+    };
+
+
+    // ============================================================
+    // START
+    // ============================================================
+
+    if (
+            document.readyState ===
+            'loading'
+    ) {
+
+      document.addEventListener(
+              'DOMContentLoaded',
+              start,
+              { once: true }
+      );
+
+    } else {
+
+      start();
+
+    }
+
+  })();
+</script>
+
+<script
+        type="module"
+        src="/src/main.tsx"
+></script>
+
+<!-- figma:body-end -->
+</body>
+</html>

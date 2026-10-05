@@ -1,0 +1,10 @@
+{
+  "description": "Simplifies task execution by providing an intuitive interface to complete actions quickly and efficiently, enhancing user productivity.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

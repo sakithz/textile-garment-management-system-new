@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-900: #1e3a8a;
+
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+
+  --color-sidebar: #0d1420;
+  --color-sidebar-hover: #1a2540;
+  --color-sidebar-active: #1e3a8a;
+  --color-sidebar-text: #94a3b8;
+  --color-sidebar-text-active: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f0f2f7;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Sidebar scrollbar invisible */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Shared ERP page theme — aligned with the Inventory page visual language.
+   This intentionally affects presentation only; page content and business logic remain unchanged. */
+
+.erp-page-theme {
+  color: #0f172a;
+}
+
+.erp-page-theme input:not([type="checkbox"]):not([type="radio"]),
+.erp-page-theme select,
+.erp-page-theme textarea {
+  border-color: #e2e8f0;
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+}
+
+.erp-page-theme input:not([type="checkbox"]):not([type="radio"]):focus,
+.erp-page-theme select:focus,
+.erp-page-theme textarea:focus {
+  outline: none;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.15);
+}
+
+.erp-page-theme table thead tr {
+  background-color: #f8fafc;
+  border-bottom-color: #e2e8f0;
+}

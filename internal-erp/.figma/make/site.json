@@ -1,0 +1,10 @@
+{
+  "description": "Streamline task management and enhance productivity for teams by organizing projects, assigning tasks, and tracking progress in real-time.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
