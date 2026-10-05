@@ -35,6 +35,7 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
+
                 // =========================================================
                 // CORS
                 // =========================================================
@@ -45,6 +46,7 @@ public class SecurityConfig {
                         )
                 )
 
+
                 // =========================================================
                 // CSRF
                 // =========================================================
@@ -52,6 +54,7 @@ public class SecurityConfig {
                 .csrf(csrf ->
                         csrf.disable()
                 )
+
 
                 // =========================================================
                 // SESSION
@@ -63,11 +66,13 @@ public class SecurityConfig {
                         )
                 )
 
+
                 // =========================================================
                 // AUTHORIZATION
                 // =========================================================
 
                 .authorizeHttpRequests(auth -> auth
+
 
                         // =================================================
                         // CORS PREFLIGHT
@@ -145,11 +150,6 @@ public class SecurityConfig {
                         // =================================================
                         // CUSTOMER ORDER LOOKUP
                         // =================================================
-                        //
-                        // Customer website can use:
-                        //
-                        // GET /api/orders/number/{orderNumber}
-                        //
 
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -172,16 +172,6 @@ public class SecurityConfig {
                         // =================================================
                         // CUSTOMER INVOICE
                         // =================================================
-                        //
-                        // Customer website uses:
-                        //
-                        // GET
-                        // /api/invoices/customer/order/{orderNumber}
-                        //
-                        // This endpoint is intentionally available to
-                        // the customer website so the invoice can be
-                        // loaded from the ERP-created invoice.
-                        //
 
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -193,13 +183,6 @@ public class SecurityConfig {
                         // =================================================
                         // CUSTOMER INVOICE PAYMENTS
                         // =================================================
-                        //
-                        // Customer website uses:
-                        //
-                        // GET /api/payments/invoice/{invoiceId}
-                        //
-                        // Internal Finance users also need this endpoint.
-                        //
 
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -249,10 +232,8 @@ public class SecurityConfig {
                         // =================================================
                         // ORDER MANAGEMENT
                         // =================================================
-                        //
-                        // Internal ERP only.
-                        //
 
+                        // CREATE ORDER
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/orders/**"
@@ -263,16 +244,19 @@ public class SecurityConfig {
                         )
 
 
+                        // UPDATE / APPROVE ORDER
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/orders/**"
                         )
                         .hasAnyRole(
                                 "ADMIN",
-                                "SALES"
+                                "SALES",
+                                "OPERATIONS"
                         )
 
 
+                        // DELETE ORDER
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/orders/**"
@@ -283,6 +267,7 @@ public class SecurityConfig {
                         )
 
 
+                        // PARTIAL ORDER UPDATE
                         .requestMatchers(
                                 HttpMethod.PATCH,
                                 "/api/orders/**"
@@ -296,6 +281,14 @@ public class SecurityConfig {
                         // =================================================
                         // GENERAL INTERNAL ORDER GET
                         // =================================================
+                        //
+                        // Finance Officer needs READ access to orders
+                        // because the Finance & Billing page loads order
+                        // information to calculate/display billing data.
+                        //
+                        // Finance is intentionally NOT included in POST,
+                        // PUT, PATCH or DELETE permissions above.
+                        //
 
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -304,7 +297,8 @@ public class SecurityConfig {
                         .hasAnyRole(
                                 "ADMIN",
                                 "SALES",
-                                "OPERATIONS"
+                                "OPERATIONS",
+                                "FINANCE"
                         )
 
 
@@ -332,6 +326,22 @@ public class SecurityConfig {
                                 "ADMIN",
                                 "INVENTORY",
                                 "PRODUCTION"
+                        )
+
+
+                        // =================================================
+                        // DELIVERY ACCESS TO PRODUCTION TASKS
+                        // =================================================
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/production/tasks"
+                        )
+                        .hasAnyRole(
+                                "ADMIN",
+                                "OPERATIONS",
+                                "PRODUCTION",
+                                "DELIVERY"
                         )
 
 
@@ -367,18 +377,10 @@ public class SecurityConfig {
                         // FINANCE / INVOICES
                         // =================================================
                         //
-                        // IMPORTANT:
+                        // Customer invoice endpoint is defined above.
                         //
-                        // The customer invoice endpoint above is placed
-                        // BEFORE this general rule.
-                        //
-                        // Therefore:
-                        //
-                        // /api/invoices/customer/order/**
-                        //     -> permitted for customer website
-                        //
-                        // Other /api/invoices/**
-                        //     -> ADMIN / FINANCE
+                        // Other invoice endpoints are available to:
+                        // ADMIN and FINANCE.
                         //
 
                         .requestMatchers(
@@ -410,6 +412,7 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
                 )
+
 
                 // =========================================================
                 // JWT / TOKEN FILTER

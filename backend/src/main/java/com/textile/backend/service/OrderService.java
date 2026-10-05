@@ -27,25 +27,25 @@ public class OrderService {
     public OrderService(
             OrderRepository orderRepository,
             CustomerRepository customerRepository,
-            QuotationRepository quotationRepository) {
-
+            QuotationRepository quotationRepository
+    ) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.quotationRepository = quotationRepository;
     }
 
-    // =========================
+    // =========================================================
     // GET ALL ORDERS
-    // =========================
+    // =========================================================
 
     @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
         return orderRepository.findAllByOrderDateDesc();
     }
 
-    // =========================
+    // =========================================================
     // GET ORDER BY ID
-    // =========================
+    // =========================================================
 
     @Transactional(readOnly = true)
     public Order getOrderById(Long id) {
@@ -54,12 +54,13 @@ public class OrderService {
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Order not found with ID: " + id
-                        ));
+                        )
+                );
     }
 
-    // =========================
+    // =========================================================
     // GET ORDER BY NUMBER
-    // =========================
+    // =========================================================
 
     @Transactional(readOnly = true)
     public Order getOrderByNumber(String orderNumber) {
@@ -69,12 +70,13 @@ public class OrderService {
                         new RuntimeException(
                                 "Order not found with order number: "
                                         + orderNumber
-                        ));
+                        )
+                );
     }
 
-    // =========================
+    // =========================================================
     // GET ORDERS BY CUSTOMER
-    // =========================
+    // =========================================================
 
     @Transactional(readOnly = true)
     public List<Order> getOrdersByCustomer(Long customerId) {
@@ -86,27 +88,28 @@ public class OrderService {
             );
         }
 
-        return orderRepository
-                .findByCustomerIdOrderByOrderDateDesc(
-                        customerId
-                );
+        return orderRepository.findByCustomerIdOrderByOrderDateDesc(
+                customerId
+        );
     }
 
-    // =========================
+    // =========================================================
     // GET ORDERS BY STATUS
-    // =========================
+    // =========================================================
 
     @Transactional(readOnly = true)
     public List<Order> getOrdersByStatus(
-            OrderStatus status) {
+            OrderStatus status
+    ) {
 
-        return orderRepository
-                .findByStatusOrderByOrderDateDesc(status);
+        return orderRepository.findByStatusOrderByOrderDateDesc(
+                status
+        );
     }
 
-    // =========================
+    // =========================================================
     // SEARCH ORDERS
-    // =========================
+    // =========================================================
 
     @Transactional(readOnly = true)
     public List<Order> searchOrders(String query) {
@@ -122,9 +125,9 @@ public class OrderService {
         );
     }
 
-    // =========================
+    // =========================================================
     // CREATE ORDER
-    // =========================
+    // =========================================================
 
     public Order createOrder(OrderRequest request) {
 
@@ -137,7 +140,8 @@ public class OrderService {
                         new RuntimeException(
                                 "Customer not found with ID: "
                                         + request.getCustomerId()
-                        ));
+                        )
+                );
 
         Order order = new Order();
 
@@ -187,7 +191,10 @@ public class OrderService {
                 request.getUnitPrice()
         );
 
-        calculateOrderTotal(order, request.getTotal());
+        calculateOrderTotal(
+                order,
+                request.getTotal()
+        );
 
         order.setFabric(
                 request.getFabric()
@@ -201,9 +208,9 @@ public class OrderService {
                 request.getSize()
         );
 
-        // =========================
+        // =====================================================
         // OPTIONAL QUOTATION
-        // =========================
+        // =====================================================
 
         if (request.getQuotationId() != null) {
 
@@ -214,7 +221,8 @@ public class OrderService {
                             new RuntimeException(
                                     "Quotation not found with ID: "
                                             + request.getQuotationId()
-                            ));
+                            )
+                    );
 
             validateQuotationForCustomer(
                     quotation,
@@ -232,7 +240,9 @@ public class OrderService {
                 );
             }
 
-            order.setQuotation(quotation);
+            order.setQuotation(
+                    quotation
+            );
         }
 
         Order savedOrder =
@@ -246,13 +256,14 @@ public class OrderService {
         return savedOrder;
     }
 
-    // =========================
+    // =========================================================
     // CREATE ORDER FROM QUOTATION
-    // =========================
+    // =========================================================
 
     public Order createOrderFromQuotation(
             Long quotationId,
-            Priority priority) {
+            Priority priority
+    ) {
 
         Quotation quotation =
                 quotationRepository.findById(
@@ -261,7 +272,8 @@ public class OrderService {
                         new RuntimeException(
                                 "Quotation not found with ID: "
                                         + quotationId
-                        ));
+                        )
+                );
 
         if (orderRepository
                 .findByQuotationId(quotationId)
@@ -370,9 +382,9 @@ public class OrderService {
         Order savedOrder =
                 orderRepository.save(order);
 
-        // =========================
+        // =====================================================
         // UPDATE QUOTATION
-        // =========================
+        // =====================================================
 
         quotation.setStatus(
                 QuotationStatus.CONVERTED_TO_ORDER
@@ -386,9 +398,9 @@ public class OrderService {
                 quotation
         );
 
-        // =========================
+        // =====================================================
         // UPDATE CUSTOMER
-        // =========================
+        // =====================================================
 
         updateCustomerOrderInformation(
                 quotation.getCustomer(),
@@ -398,13 +410,14 @@ public class OrderService {
         return savedOrder;
     }
 
-    // =========================
+    // =========================================================
     // UPDATE ORDER
-    // =========================
+    // =========================================================
 
     public Order updateOrder(
             Long id,
-            OrderRequest request) {
+            OrderRequest request
+    ) {
 
         Order order =
                 getOrderById(id);
@@ -416,9 +429,9 @@ public class OrderService {
             );
         }
 
-        // =========================
+        // =====================================================
         // CUSTOMER
-        // =========================
+        // =====================================================
 
         if (request.getCustomerId() != null &&
                 (order.getCustomer() == null ||
@@ -435,14 +448,15 @@ public class OrderService {
                             new RuntimeException(
                                     "Customer not found with ID: "
                                             + request.getCustomerId()
-                            ));
+                            )
+                    );
 
             order.setCustomer(customer);
         }
 
-        // =========================
+        // =====================================================
         // BASIC DETAILS
-        // =========================
+        // =====================================================
 
         if (request.getGarmentType() != null &&
                 !request.getGarmentType()
@@ -482,9 +496,9 @@ public class OrderService {
             );
         }
 
-        // =========================
+        // =====================================================
         // PRIORITY / STATUS
-        // =========================
+        // =====================================================
 
         if (request.getPriority() != null) {
 
@@ -500,9 +514,9 @@ public class OrderService {
             );
         }
 
-        // =========================
+        // =====================================================
         // PROGRESS
-        // =========================
+        // =====================================================
 
         if (request.getProgress() != null) {
 
@@ -519,9 +533,9 @@ public class OrderService {
             );
         }
 
-        // =========================
+        // =====================================================
         // PRICE
-        // =========================
+        // =====================================================
 
         if (request.getUnitPrice() != null) {
 
@@ -542,9 +556,9 @@ public class OrderService {
                 request.getTotal()
         );
 
-        // =========================
+        // =====================================================
         // OTHER DETAILS
-        // =========================
+        // =====================================================
 
         if (request.getFabric() != null) {
 
@@ -570,9 +584,9 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    // =========================
+    // =========================================================
     // DELETE ORDER
-    // =========================
+    // =========================================================
 
     public void deleteOrder(Long id) {
 
@@ -582,12 +596,13 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
-    // =========================
+    // =========================================================
     // VALIDATE ORDER REQUEST
-    // =========================
+    // =========================================================
 
     private void validateOrderRequest(
-            OrderRequest request) {
+            OrderRequest request
+    ) {
 
         if (request == null) {
 
@@ -622,13 +637,14 @@ public class OrderService {
         }
     }
 
-    // =========================
+    // =========================================================
     // VALIDATE QUOTATION CUSTOMER
-    // =========================
+    // =========================================================
 
     private void validateQuotationForCustomer(
             Quotation quotation,
-            Customer customer) {
+            Customer customer
+    ) {
 
         if (quotation.getCustomer() == null) {
 
@@ -647,13 +663,14 @@ public class OrderService {
         }
     }
 
-    // =========================
+    // =========================================================
     // CALCULATE TOTAL
-    // =========================
+    // =========================================================
 
     private void calculateOrderTotal(
             Order order,
-            Double requestedTotal) {
+            Double requestedTotal
+    ) {
 
         if (order.getUnitPrice() != null &&
                 order.getQuantity() != null) {
@@ -685,9 +702,9 @@ public class OrderService {
         order.setTotal(0.0);
     }
 
-    // =========================
+    // =========================================================
     // GENERATE ORDER NUMBER
-    // =========================
+    // =========================================================
 
     private String generateOrderNumber() {
 
@@ -704,22 +721,22 @@ public class OrderService {
                     "ORD-" + number;
 
         } while (
-                orderRepository
-                        .existsByOrderNumber(
-                                orderNumber
-                        )
+                orderRepository.existsByOrderNumber(
+                        orderNumber
+                )
         );
 
         return orderNumber;
     }
 
-    // =========================
+    // =========================================================
     // UPDATE CUSTOMER STATISTICS
-    // =========================
+    // =========================================================
 
     private void updateCustomerOrderInformation(
             Customer customer,
-            Order order) {
+            Order order
+    ) {
 
         if (customer == null) {
             return;
